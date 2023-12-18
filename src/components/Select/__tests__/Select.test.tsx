@@ -46,13 +46,13 @@ describe("Select", () => {
       expect(options).toHaveLength(3);
 
       expect(
-        screen.getByRole("option", { name: "Charmander" })
+        screen.getByRole("option", { name: "Charmander" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("option", { name: "Charmeleon" })
+        screen.getByRole("option", { name: "Charmeleon" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("option", { name: "Charizard" })
+        screen.getByRole("option", { name: "Charizard" }),
       ).toBeInTheDocument();
     });
   });
@@ -60,28 +60,126 @@ describe("Select", () => {
   describe("Keyboard Support", () => {
     describe("Textbox", () => {
       describe("Down Arrow", () => {
-        test("If the textbox is not empty and the listbox is displayed, moves visual focus to the first suggested value.", () => {});
-        test("If the textbox is empty and the listbox is not displayed, opens the listbox and moves visual focus to the first option.", () => {});
-        test("DOM focus remains on the textbox.", () => {});
+        test("If the textbox is empty and the listbox is not displayed, opens the listbox and moves visual focus to the first option.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.keyboard("{Tab}");
+          await user.keyboard("{ArrowDown}");
+
+          expect(screen.getByRole("listbox")).toBeVisible();
+
+          expect(
+            screen.getByRole("option", { name: /bulbasaur/i }),
+          ).toHaveAttribute("aria-selected", "true");
+        });
+        test("If the textbox is not empty and the listbox is displayed, moves visual focus to the first suggested value.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.type(screen.getByRole("combobox"), "Char");
+          await user.keyboard("{ArrowDown}");
+
+          expect(
+            screen.getByRole("option", { name: /charmander/i }),
+          ).toHaveAttribute("aria-selected", "true");
+        });
+        test("DOM focus remains on the textbox.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.keyboard("{Tab}");
+          await user.keyboard("{ArrowDown}");
+
+          expect(screen.getByRole("combobox")).toHaveFocus();
+        });
       });
 
       describe("Alt + Down Arrow", () => {
-        test("Opens the listbox without moving focus or changing selection.", () => {});
+        test("Opens the listbox without moving focus or changing selection.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.keyboard("{Tab}");
+          await user.keyboard("{Alt>}{ArrowDown}{/Alt}");
+
+          expect(screen.getByRole("combobox")).toHaveFocus();
+
+          expect(
+            screen.getByRole("option", { name: /bulbasaur/i }),
+          ).not.toHaveAttribute("aria-selected", "true");
+        });
       });
 
       describe("Up Arrow", () => {
-        test("If the textbox is not empty and the listbox is displayed, moves visual focus to the last suggested value.", () => {});
-        test("If the textbox is empty, first opens the listbox if it is not already displayed and then moves visual focus to the last option.", () => {});
-        test("DOM focus remains on the textbox.", () => {});
+        test("If the textbox is empty, first opens the listbox if it is not already displayed and then moves visual focus to the last option.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.keyboard("{Tab}");
+          await user.keyboard("{ArrowUp}");
+
+          expect(screen.getByRole("listbox")).toBeVisible();
+
+          expect(screen.getByRole("option", { name: /mew/i })).toHaveAttribute(
+            "aria-selected",
+            "true",
+          );
+        });
+        test("If the textbox is not empty and the listbox is displayed, moves visual focus to the last suggested value.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.type(screen.getByRole("combobox"), "Char");
+          await user.keyboard("{ArrowUp}");
+
+          expect(
+            screen.getByRole("option", { name: /charizard/i }),
+          ).toHaveAttribute("aria-selected", "true");
+        });
+        test("DOM focus remains on the textbox.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.keyboard("{Tab}");
+          await user.keyboard("{ArrowUp}");
+
+          expect(screen.getByRole("combobox")).toHaveFocus();
+        });
       });
 
       describe("Enter", () => {
-        test("Closes the listbox if it is displayed.", () => {});
+        test("Closes the listbox if it is displayed.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.type(screen.getByRole("combobox"), "Char");
+          await user.keyboard("{Enter}");
+
+          expect(screen.getByRole("listbox")).not.toBeVisible();
+        });
       });
 
       describe("Escape", () => {
-        test("If the listbox is displayed, closes it.", () => {});
-        test("If the listbox is not displayed, clears the textbox.", () => {});
+        test("If the listbox is displayed, closes it.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.type(screen.getByRole("combobox"), "Char");
+          await user.keyboard("{Escape}");
+
+          expect(screen.getByRole("listbox")).not.toBeVisible();
+        });
+        test("If the listbox is not displayed, clears the textbox.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.type(screen.getByRole("combobox"), "Char");
+          await user.keyboard("{Escape}");
+          await user.keyboard("{Escape}");
+
+          expect(screen.getByRole("combobox")).toHaveValue("");
+        });
       });
     });
 
