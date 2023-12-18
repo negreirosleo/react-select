@@ -14,7 +14,9 @@ describe("Select", () => {
       const user = userEvent.setup();
       render(<Select />);
 
-      const textBox = screen.getByRole("combobox", { name: "Select Pokemons" });
+      const textBox = screen.getByRole("combobox", {
+        name: /select pokemons/i,
+      });
 
       await user.click(textBox);
 
@@ -27,7 +29,9 @@ describe("Select", () => {
       const user = userEvent.setup();
       render(<Select />);
 
-      const textBox = screen.getByRole("combobox", { name: "Select Pokemons" });
+      const textBox = screen.getByRole("combobox", {
+        name: /select pokemons/i,
+      });
 
       await user.type(textBox, "Agumon");
 
@@ -38,7 +42,9 @@ describe("Select", () => {
       const user = userEvent.setup();
       render(<Select />);
 
-      const textBox = screen.getByRole("combobox", { name: "Select Pokemons" });
+      const textBox = screen.getByRole("combobox", {
+        name: /select pokemons/i,
+      });
       await user.type(textBox, "Char");
 
       const options = screen.getAllByRole("option");
@@ -46,13 +52,13 @@ describe("Select", () => {
       expect(options).toHaveLength(3);
 
       expect(
-        screen.getByRole("option", { name: "Charmander" }),
+        screen.getByRole("option", { name: /charmander/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("option", { name: "Charmeleon" }),
+        screen.getByRole("option", { name: /charmeleon/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("option", { name: "Charizard" }),
+        screen.getByRole("option", { name: /charizard/i }),
       ).toBeInTheDocument();
     });
   });
@@ -68,7 +74,6 @@ describe("Select", () => {
           await user.keyboard("{ArrowDown}");
 
           expect(screen.getByRole("listbox")).toBeVisible();
-
           expect(
             screen.getByRole("option", { name: /bulbasaur/i }),
           ).toHaveAttribute("aria-selected", "true");
@@ -185,30 +190,130 @@ describe("Select", () => {
 
     describe("Listbox Popup", () => {
       describe("Enter", () => {
-        test("Sets the textbox value to the content of the focused option in the listbox.", () => {});
+        test("Sets the textbox value to the content of the focused option in the listbox.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.type(screen.getByRole("combobox"), "Char");
+          await user.keyboard("{ArrowDown}");
+          await user.keyboard("{Enter}");
+
+          expect(screen.getByRole("combobox")).toHaveValue("Charmander");
+        });
       });
 
       describe("Tab", () => {
-        test("Sets the textbox value to the content of the focused option in the listbox.", () => {});
-        test("Closes the listbox and unfocus the listbox and textbox.", () => {});
+        test("Sets the textbox value to the content of the focused option in the listbox.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.type(screen.getByRole("combobox"), "Char");
+          await user.keyboard("{ArrowDown}");
+          await user.keyboard("{Tab}");
+
+          expect(screen.getByRole("combobox")).toHaveValue("Charmander");
+        });
+        test("Closes the listbox and unfocus the listbox and textbox.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.type(screen.getByRole("combobox"), "Char");
+          await user.keyboard("{ArrowDown}");
+          await user.keyboard("{Tab}");
+
+          expect(screen.getByRole("listbox")).not.toBeVisible();
+          expect(screen.getByRole("combobox")).not.toHaveFocus();
+        });
       });
 
       describe("Down Arrow", () => {
-        test("Moves visual focus to the next option.", () => {});
-        test("If visual focus is on the last option, moves visual focus to the first option.", () => {});
+        test("Moves visual focus to the next option.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.keyboard("{Tab}");
+          await user.keyboard("{ArrowDown}");
+          await user.keyboard("{ArrowDown}");
+
+          expect(
+            screen.getByRole("option", { name: /ivysaur/i }),
+          ).toHaveAttribute("aria-selected", "true");
+        });
+        test("If visual focus is on the last option, moves visual focus to the first option.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.keyboard("{Tab}");
+          await user.keyboard("{ArrowUp}");
+          await user.keyboard("{ArrowDown}");
+
+          expect(
+            screen.getByRole("option", { name: /bulbasaur/i }),
+          ).toHaveAttribute("aria-selected", "true");
+        });
       });
 
       describe("Up Arrow", () => {
-        test("Moves visual focus to the previous option.", () => {});
-        test("If visual focus is on the first option, moves visual focus to the last option.", () => {});
+        test("Moves visual focus to the previous option.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.keyboard("{Tab}");
+          await user.keyboard("{ArrowDown}");
+          await user.keyboard("{ArrowDown}");
+          await user.keyboard("{ArrowUp}");
+
+          expect(
+            screen.getByRole("option", { name: /bulbasaur/i }),
+          ).toHaveAttribute("aria-selected", "true");
+        });
+        test("If visual focus is on the first option, moves visual focus to the last option.", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.keyboard("{Tab}");
+          await user.keyboard("{ArrowDown}");
+          await user.keyboard("{ArrowUp}");
+
+          expect(screen.getByRole("option", { name: /mew/i })).toHaveAttribute(
+            "aria-selected",
+            "true",
+          );
+        });
       });
 
       describe("Home", () => {
-        test("Moves visual focus to the textbox and places the editing cursor at the beginning of the field.", () => {});
+        test("Moves visual focus to the textbox", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.keyboard("{Tab}");
+          await user.keyboard("{ArrowDown}");
+          await user.keyboard("{Home}");
+
+          const options = screen.getAllByRole("option");
+
+          options.forEach((option) => {
+            expect(option).toHaveAttribute("aria-selected", "false");
+          });
+        });
       });
 
       describe("End", () => {
-        test("Moves visual focus to the textbox and places the editing cursor at the end of the field.", () => {});
+        test("Moves visual focus to the textbox", async () => {
+          const user = userEvent.setup();
+          render(<Select />);
+
+          await user.keyboard("{Tab}");
+          await user.keyboard("{ArrowDown}");
+          await user.keyboard("{End}");
+
+          const options = screen.getAllByRole("option");
+
+          options.forEach((option) => {
+            expect(option).toHaveAttribute("aria-selected", "false");
+          });
+        });
       });
     });
   });
