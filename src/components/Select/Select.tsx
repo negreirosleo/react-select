@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { POKEMONS } from "./constants";
 import "./Select.css";
+
+import { POKEMONS } from "./constants";
+import { useState } from "react";
 
 const NO_OPTION_SELECTED = -1;
 
@@ -31,8 +32,34 @@ export const Select = () => {
         role="combobox"
         aria-autocomplete="list"
         aria-controls="dropdown-list"
+        onKeyDown={(e) => {
+          if (e.key === "ArrowDown") {
+            setShowDropdown(true);
+
+            if (!e.altKey) {
+              setActiveOption(0);
+            }
+          }
+
+          if (e.key === "ArrowUp") {
+            setShowDropdown(true);
+            setActiveOption(filteredOptions.length - 1);
+          }
+
+          if (e.key === "Enter") {
+            setShowDropdown(false);
+          }
+
+          if (e.key === "Escape") {
+            if (showDropdown) {
+             setShowDropdown(false);
+            } else {
+              setInputValue("");
+            }
+          }
+        }}
         aria-expanded={showDropdown}
-        onClick={() => setShowDropdown(true)}
+        onClick={() =>setShowDropdown(true)}
         onBlur={() => setShowDropdown(false)}
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}

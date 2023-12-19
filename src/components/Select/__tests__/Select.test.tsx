@@ -1,5 +1,6 @@
+import { render, screen, waitFor } from "@testing-library/react";
+
 import { Select } from "../Select";
-import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 describe("Select", () => {
@@ -63,6 +64,12 @@ describe("Select", () => {
     });
   });
 
+  // 17 tests falhando - 6 passando
+  // 13 tests falhando - 10 passando
+  // 12 tests falhando - 11 passando
+  // 11 tests falhando - 12 passando
+  // 10 tests falhando - 13 passando
+  // 8 tests falhando - 15 passando
   describe("Keyboard Support", () => {
     describe("Textbox", () => {
       describe("Down Arrow", () => {
@@ -78,6 +85,7 @@ describe("Select", () => {
             screen.getByRole("option", { name: /bulbasaur/i }),
           ).toHaveAttribute("aria-selected", "true");
         });
+
         test("If the textbox is not empty and the listbox is displayed, moves visual focus to the first suggested value.", async () => {
           const user = userEvent.setup();
           render(<Select />);
@@ -89,6 +97,7 @@ describe("Select", () => {
             screen.getByRole("option", { name: /charmander/i }),
           ).toHaveAttribute("aria-selected", "true");
         });
+
         test("DOM focus remains on the textbox.", async () => {
           const user = userEvent.setup();
           render(<Select />);
@@ -110,6 +119,8 @@ describe("Select", () => {
 
           expect(screen.getByRole("combobox")).toHaveFocus();
 
+          expect(screen.getByRole("listbox")).toBeVisible();
+
           expect(
             screen.getByRole("option", { name: /bulbasaur/i }),
           ).not.toHaveAttribute("aria-selected", "true");
@@ -126,7 +137,7 @@ describe("Select", () => {
 
           expect(screen.getByRole("listbox")).toBeVisible();
 
-          expect(screen.getByRole("option", { name: /mew/i })).toHaveAttribute(
+          expect(screen.getByRole("option", { name: "Mew" })).toHaveAttribute(
             "aria-selected",
             "true",
           );
@@ -158,10 +169,11 @@ describe("Select", () => {
           const user = userEvent.setup();
           render(<Select />);
 
-          await user.type(screen.getByRole("combobox"), "Char");
+          await user.keyboard("{Tab}");
+          await user.keyboard("{ArrowUp}");
           await user.keyboard("{Enter}");
 
-          expect(screen.getByRole("listbox")).not.toBeVisible();
+          expect(screen.getByRole("listbox", { hidden: true })).not.toBeVisible();
         });
       });
 
@@ -170,17 +182,19 @@ describe("Select", () => {
           const user = userEvent.setup();
           render(<Select />);
 
-          await user.type(screen.getByRole("combobox"), "Char");
+          await user.keyboard("{Tab}");
+          await user.keyboard("{ArrowDown}");
           await user.keyboard("{Escape}");
 
-          expect(screen.getByRole("listbox")).not.toBeVisible();
+          expect(screen.getByRole("listbox", { hidden: true })).not.toBeVisible();
         });
         test("If the listbox is not displayed, clears the textbox.", async () => {
           const user = userEvent.setup();
           render(<Select />);
 
-          await user.type(screen.getByRole("combobox"), "Char");
-          await user.keyboard("{Escape}");
+          await user.keyboard("{Tab}");
+          await user.type(screen.getByRole("combobox"), "Char", {skipClick: true});
+
           await user.keyboard("{Escape}");
 
           expect(screen.getByRole("combobox")).toHaveValue("");

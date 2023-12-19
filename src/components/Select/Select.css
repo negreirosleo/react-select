@@ -50,8 +50,8 @@
 }
 
 .dropdown--closed {
-  visibility: hidden;
-  opacity: 0;
+  visibility: hidden !important;
+  opacity: 0 !important;
 }
 
 .dropdown-option {
