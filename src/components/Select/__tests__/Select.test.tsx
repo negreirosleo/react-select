@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 
 import { Select } from "../Select";
 import userEvent from "@testing-library/user-event";
@@ -53,13 +53,13 @@ describe("Select", () => {
       expect(options).toHaveLength(3);
 
       expect(
-        screen.getByRole("option", { name: /charmander/i }),
+        screen.getByRole("option", { name: /charmander/i })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("option", { name: /charmeleon/i }),
+        screen.getByRole("option", { name: /charmeleon/i })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("option", { name: /charizard/i }),
+        screen.getByRole("option", { name: /charizard/i })
       ).toBeInTheDocument();
     });
   });
@@ -82,7 +82,7 @@ describe("Select", () => {
 
           expect(screen.getByRole("listbox")).toBeVisible();
           expect(
-            screen.getByRole("option", { name: /bulbasaur/i }),
+            screen.getByRole("option", { name: /bulbasaur/i })
           ).toHaveAttribute("aria-selected", "true");
         });
 
@@ -94,7 +94,7 @@ describe("Select", () => {
           await user.keyboard("{ArrowDown}");
 
           expect(
-            screen.getByRole("option", { name: /charmander/i }),
+            screen.getByRole("option", { name: /charmander/i })
           ).toHaveAttribute("aria-selected", "true");
         });
 
@@ -122,7 +122,7 @@ describe("Select", () => {
           expect(screen.getByRole("listbox")).toBeVisible();
 
           expect(
-            screen.getByRole("option", { name: /bulbasaur/i }),
+            screen.getByRole("option", { name: /bulbasaur/i })
           ).not.toHaveAttribute("aria-selected", "true");
         });
       });
@@ -139,7 +139,7 @@ describe("Select", () => {
 
           expect(screen.getByRole("option", { name: "Mew" })).toHaveAttribute(
             "aria-selected",
-            "true",
+            "true"
           );
         });
         test("If the textbox is not empty and the listbox is displayed, moves visual focus to the last suggested value.", async () => {
@@ -150,7 +150,7 @@ describe("Select", () => {
           await user.keyboard("{ArrowUp}");
 
           expect(
-            screen.getByRole("option", { name: /charizard/i }),
+            screen.getByRole("option", { name: /charizard/i })
           ).toHaveAttribute("aria-selected", "true");
         });
         test("DOM focus remains on the textbox.", async () => {
@@ -173,7 +173,9 @@ describe("Select", () => {
           await user.keyboard("{ArrowUp}");
           await user.keyboard("{Enter}");
 
-          expect(screen.getByRole("listbox", { hidden: true })).not.toBeVisible();
+          expect(
+            screen.getByRole("listbox", { hidden: true })
+          ).not.toBeVisible();
         });
       });
 
@@ -186,14 +188,18 @@ describe("Select", () => {
           await user.keyboard("{ArrowDown}");
           await user.keyboard("{Escape}");
 
-          expect(screen.getByRole("listbox", { hidden: true })).not.toBeVisible();
+          expect(
+            screen.getByRole("listbox", { hidden: true })
+          ).not.toBeVisible();
         });
         test("If the listbox is not displayed, clears the textbox.", async () => {
           const user = userEvent.setup();
           render(<Select />);
 
           await user.keyboard("{Tab}");
-          await user.type(screen.getByRole("combobox"), "Char", {skipClick: true});
+          await user.type(screen.getByRole("combobox"), "Char", {
+            skipClick: true,
+          });
 
           await user.keyboard("{Escape}");
 
@@ -235,7 +241,9 @@ describe("Select", () => {
           await user.keyboard("{ArrowDown}");
           await user.keyboard("{Tab}");
 
-          expect(screen.getByRole("listbox")).not.toBeVisible();
+          expect(
+            screen.getByRole("listbox", { hidden: true })
+          ).not.toBeVisible();
           expect(screen.getByRole("combobox")).not.toHaveFocus();
         });
       });
@@ -250,7 +258,7 @@ describe("Select", () => {
           await user.keyboard("{ArrowDown}");
 
           expect(
-            screen.getByRole("option", { name: /ivysaur/i }),
+            screen.getByRole("option", { name: /ivysaur/i })
           ).toHaveAttribute("aria-selected", "true");
         });
         test("If visual focus is on the last option, moves visual focus to the first option.", async () => {
@@ -262,7 +270,7 @@ describe("Select", () => {
           await user.keyboard("{ArrowDown}");
 
           expect(
-            screen.getByRole("option", { name: /bulbasaur/i }),
+            screen.getByRole("option", { name: /bulbasaur/i })
           ).toHaveAttribute("aria-selected", "true");
         });
       });
@@ -278,7 +286,7 @@ describe("Select", () => {
           await user.keyboard("{ArrowUp}");
 
           expect(
-            screen.getByRole("option", { name: /bulbasaur/i }),
+            screen.getByRole("option", { name: /bulbasaur/i })
           ).toHaveAttribute("aria-selected", "true");
         });
         test("If visual focus is on the first option, moves visual focus to the last option.", async () => {
@@ -291,7 +299,7 @@ describe("Select", () => {
 
           expect(screen.getByRole("option", { name: /mew/i })).toHaveAttribute(
             "aria-selected",
-            "true",
+            "true"
           );
         });
       });

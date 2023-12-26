@@ -2,6 +2,7 @@ import "./Select.css";
 
 import { POKEMONS } from "./constants";
 import { useState } from "react";
+import { Option } from "./Option";
 
 const NO_OPTION_SELECTED = -1;
 
@@ -37,7 +38,14 @@ export const Select = () => {
             setShowDropdown(true);
 
             if (!e.altKey) {
-              setActiveOption(0);
+              setActiveOption((oldOption) => {
+                const nextOption = oldOption + 1;
+
+                if (nextOption >= filteredOptions.length) {
+                  return 0;
+                }
+                return nextOption;
+              });
             }
           }
 
@@ -47,19 +55,31 @@ export const Select = () => {
           }
 
           if (e.key === "Enter") {
+            if (activeOption !== NO_OPTION_SELECTED && showDropdown) {
+              setInputValue(filteredOptions[activeOption]);
+            }
+
+            setShowDropdown(false);
+          }
+
+          if (e.key === "Tab") {
+            if (activeOption !== NO_OPTION_SELECTED && showDropdown) {
+              setInputValue(filteredOptions[activeOption]);
+            }
+
             setShowDropdown(false);
           }
 
           if (e.key === "Escape") {
             if (showDropdown) {
-             setShowDropdown(false);
+              setShowDropdown(false);
             } else {
               setInputValue("");
             }
           }
         }}
         aria-expanded={showDropdown}
-        onClick={() =>setShowDropdown(true)}
+        onClick={() => setShowDropdown(true)}
         onBlur={() => setShowDropdown(false)}
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
@@ -76,20 +96,16 @@ export const Select = () => {
           filteredOptions.map((pokemon, index) => {
             const selected = index === activeOption;
             return (
-              <li
-                className={`dropdown-option ${
-                  selected ? "dropdown-option--selected" : ""
-                } `}
+              <Option
                 key={pokemon}
-                role="option"
-                aria-selected={selected}
+                selected={selected}
                 onClick={() => {
                   setInputValue(pokemon);
                   setActiveOption(index);
                 }}
               >
                 {pokemon}
-              </li>
+              </Option>
             );
           })
         ) : (
